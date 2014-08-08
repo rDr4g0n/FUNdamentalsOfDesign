@@ -1,0 +1,62 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title></title>
+	<meta charset="utf-8">
+</head>
+<body>
+
+	<div id="messages"></div>
+
+	<script>
+
+		// ws connect URL
+		var url = "ws://192.168.1.96:3006";
+
+		// simple event emitter object
+		var remoteEvents = {
+			events: {},
+			emit: function(eventName){
+				if(this.events[eventName]){
+					this.events[eventName].forEach(function(fn){
+						fn.call();
+					});
+				}
+			},
+			on: function(eventName, fn){
+				if(!this.events[eventName]){
+					this.events[eventName] = [];
+				}
+				this.events[eventName].push(fn);
+			}
+		};
+
+		// event listeners for various ws events
+		remoteEvents.on("ohai", function(){
+			alert("ohai!");
+		})
+
+		// initWS();
+
+		// function initWS(){
+			// load up that freaking websocket, slut!
+			var ws = new WebSocket(url, "echo-protocol");
+			ws.onerror = function(e){
+				console.log("ws err", e);
+			};
+			ws.onclose = function(e){
+				console.log("ws close", e);
+			};
+			ws.onopen = function(e){
+				console.log("ws open!", e);
+			};
+			ws.onmessage = function(msg){
+				remoteEvents.emit(msg.data);
+				// document.getElementById("messages").appendChild(document.createTextNode(msg.data));
+				console.log("has message!", msg);
+			};
+		// }
+	</script>
+
+</body>
+</html>

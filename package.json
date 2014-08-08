@@ -1,0 +1,15 @@
+{
+  "name": "remote_server",
+  "description": "serves up websocket connections between webpages",
+  "dependencies": {
+    "websocket": "~1.0.8"
+  },
+  "devDependencies": {},
+  "repository": "https://github.com/rDr4g0n/FUNdamentalsOfDesign",
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "http://opensource.org/licenses/MIT"
+    }
+  ]
+}

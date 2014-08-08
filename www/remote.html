@@ -1,0 +1,46 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+	<title></title>
+	<meta charset="utf-8">
+</head>
+<body>
+
+	<button id="sayHiButt">Say Hi</button>
+
+	<div id="messages"></div>
+
+
+	<script>
+
+	
+
+		var url = "ws://192.168.1.96:3006",
+			ws;
+
+		document.getElementById("sayHiButt").addEventListener("click", function(){
+			ws.send("ohai");
+		});
+
+		// function initWS(){
+			// load up that freaking websocket, slut!
+			ws = new WebSocket(url, "echo-protocol");
+			ws.onerror = function(e){
+				console.log("ws err", e);
+			};
+			ws.onclose = function(e){
+				console.log("ws close", e);
+			};
+			ws.onopen = function(e){
+				console.log("ws open!", e);
+			};
+			ws.onmessage = function(msg){
+				// remoteEvents.emit(msg);
+				// document.getElementById("messages").appendChild(document.createTextNode(msg.data));
+				console.log("has message!", msg);
+			};
+		// }
+	</script>
+
+</body>
+</html>
