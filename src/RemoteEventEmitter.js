@@ -96,6 +96,7 @@
 
 		send: function(eventName, data){
 			var message = this._createEventMessage(eventName, data);
+			console.log("sending message", JSON.stringify(message));
 			this.connection.send(JSON.stringify(message));
 		},
 

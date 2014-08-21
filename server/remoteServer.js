@@ -114,8 +114,6 @@ wsSrv.on("request", function(req){
 // broadcasts message `msg` to all connections in
 // channel `channel`, whos id is NOT on the blacklist `ignoreList`
 function broadcastMessage(msg, channel, ignoreList){
-	// TODO - try/catch json
-	var messageJSON = JSON.stringify(msg);
 	channel.forEach(function(connection){
 		if(!~ignoreList.indexOf(connection.id)){
 			connection.send(msg);

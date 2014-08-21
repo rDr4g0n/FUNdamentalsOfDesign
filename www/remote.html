@@ -6,7 +6,7 @@
 </head>
 <body>
 
-	<button id="sayHiButt">Say Hi</button>
+	<button id="sayHiButt">The Colors!</button>
 
 	<div id="messages"></div>
 
@@ -15,7 +15,7 @@
 	<script src="js/RemoteEventEmitter.js"></script>
 	<script>
 		var eventerator = new RemoteEventEmitter({
-			url: "ws://localhost:3006",
+			url: "ws://192.168.1.137:3006",
 			channels: "butt"
 		});
 
@@ -24,7 +24,7 @@
 		});
 
 		document.getElementById("sayHiButt").addEventListener("click", function(){
-			eventerator.send("hi");
+			eventerator.send("colorChange");
 		});
 	</script>
 

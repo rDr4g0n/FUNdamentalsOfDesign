@@ -67,7 +67,9 @@ ConnectionAgent.prototype.handleControlMessage = function(control, data){
 };
 
 ConnectionAgent.prototype.send = function(message) {
-	this.connection.sendUTF(message);
+	// TODO - try/catch json encode
+	var jsonMessage = JSON.stringify(message);
+	this.connection.sendUTF(jsonMessage);
 };
 
 module.exports = ConnectionAgent;
