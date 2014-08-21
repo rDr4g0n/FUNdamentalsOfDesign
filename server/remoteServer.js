@@ -5,10 +5,13 @@ var http = require("http"),
 	srv, wsSrv;
 	port = process.argv[2] || 3006;
 
-var WebSocketServer = require("websocket").server;
+var WebSocketServer = require("websocket").server,
+	ConnectionAgent = require("./ConnectionAgent");
 
 var wwwPath = "../www/",
-	connectionsList = [];
+	connectionsList = [],
+	channelsMap = {},
+	connectionIds = 0;
 
 srv = http.createServer(function(req, res){
 	var uri = url.parse(req.url).pathname,
@@ -74,26 +77,48 @@ console.log("server running at http://localhost:"+ port);
 
 
 /** websocket crap **/
+// TODO - wrap all this websocket junk into a nice
+// little module
 
 wsSrv = new WebSocketServer({
     httpServer: srv,
     autoAcceptConnections: false
 });
 wsSrv.on("request", function(req){
-	var connection = req.accept('echo-protocol', req.origin);
 
-    console.log((new Date()) + ' Connection accepted.');
+	var connectionAgent = new ConnectionAgent(req.accept('remote-events', req.origin));
 
-    connection.on('message', function(message) {
-        console.log('Received Message: ' + message.utf8Data);
-        connectionsList.forEach(function(connection){
-        	connection.sendUTF(message.utf8Data);
-        });
+    connectionAgent.on('message', function(message) {
+        // rebroadcast this message to everyone except the sender
+	    connectionAgent.subscribed.forEach(function(channelName){
+	    	console.log("Rebroadcasting message", message, "to channel", channelName);
+			broadcastMessage(message, channelsMap[channelName] || [], [connectionAgent.id]);
+	    });
     });
 
-    connection.on('close', function(reasonCode, description) {
-        console.log((new Date()) + ' Peer ' + connection.remoteAddress + ' disconnected.');
+    connectionAgent.on("subscribe", function(channels){
+    	channels.forEach(function(channelName){
+    		if(!channelsMap[channelName]){
+    			channelsMap[channelName] = [];
+    		}
+    		channelsMap[channelName].push(connectionAgent);
+    	});
     });
 
-    connectionsList.push(connection);
+    // TODO - close event
+    // TODO - subscribe event
+
+    connectionsList.push(connectionAgent);
 });
+
+// broadcasts message `msg` to all connections in
+// channel `channel`, whos id is NOT on the blacklist `ignoreList`
+function broadcastMessage(msg, channel, ignoreList){
+	// TODO - try/catch json
+	var messageJSON = JSON.stringify(msg);
+	channel.forEach(function(connection){
+		if(!~ignoreList.indexOf(connection.id)){
+			connection.send(msg);
+		}
+	});
+}

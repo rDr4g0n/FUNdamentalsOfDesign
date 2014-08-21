@@ -11,35 +11,21 @@
 	<div id="messages"></div>
 
 
+	<script src="js/eventEmitterMixin.js"></script>
+	<script src="js/RemoteEventEmitter.js"></script>
 	<script>
-
-	
-
-		var url = "ws://192.168.1.96:3006",
-			ws;
-
-		document.getElementById("sayHiButt").addEventListener("click", function(){
-			ws.send("ohai");
+		var eventerator = new RemoteEventEmitter({
+			url: "ws://localhost:3006",
+			channels: "butt"
 		});
 
-		// function initWS(){
-			// load up that freaking websocket, slut!
-			ws = new WebSocket(url, "echo-protocol");
-			ws.onerror = function(e){
-				console.log("ws err", e);
-			};
-			ws.onclose = function(e){
-				console.log("ws close", e);
-			};
-			ws.onopen = function(e){
-				console.log("ws open!", e);
-			};
-			ws.onmessage = function(msg){
-				// remoteEvents.emit(msg);
-				// document.getElementById("messages").appendChild(document.createTextNode(msg.data));
-				console.log("has message!", msg);
-			};
-		// }
+		eventerator.on("hi", function(data){
+			document.getElementById("messages").appendChild(document.createTextNode("hi!"));
+		});
+
+		document.getElementById("sayHiButt").addEventListener("click", function(){
+			eventerator.send("hi");
+		});
 	</script>
 
 </body>
